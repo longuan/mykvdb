@@ -6,15 +6,26 @@ project(mykvdb)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -Wall -g -DDEBUG") 
+set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -Wall -g") 
 
 include_directories(
     include
 )
 
-set(SRC_FILES 
+set(TEST_SRC 
+    ./src/test.cpp
     ./src/db.cpp
     ./include/leveldb/arena.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SRC_FILES})
+set(CLI_SRC 
+    ./src/client.cpp
+    ./src/db.cpp
+    ./include/leveldb/arena.cpp
+)
+
+add_executable(MyKvTEST ${TEST_SRC})
+target_link_libraries(MyKvTEST pthread)
+
+add_executable(MyKvCLI ${CLI_SRC})
+target_link_libraries(MyKvCLI pthread)

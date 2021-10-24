@@ -54,3 +54,24 @@ class Random {
   // range [0,2^max_log-1] with exponential bias towards smaller numbers.
   uint32_t Skewed(int max_log) { return Uniform(1 << Uniform(max_log + 1)); }
 };
+
+class LCG {
+ private:
+  unsigned long int m_;
+  unsigned long int a_;
+  unsigned long int c_;
+  unsigned long int x_;
+
+ public:
+  LCG(unsigned long int m,
+      unsigned long int a,
+      unsigned long int c,
+      unsigned long int seed)
+      : m_(m), a_(a), c_(c), x_(seed){};
+
+  unsigned long int Next() {
+    unsigned long int x = (a_ * x_ + c_) % m_;
+    x_ = x;
+    return x;
+  }
+};

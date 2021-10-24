@@ -177,7 +177,8 @@ struct SkipList<Key, Comparator>::Node {
 
 template <typename Key, class Comparator>
 typename SkipList<Key, Comparator>::Node* SkipList<Key, Comparator>::NewNode(
-    const Key& key, int height) {
+    const Key& key,
+    int height) {
   char* const node_memory = arena_->AllocateAligned(
       sizeof(Node) + sizeof(std::atomic<Node*>) * (height - 1));
   return new (node_memory) Node(key);
@@ -266,7 +267,8 @@ SkipList<Key, Comparator>::FindGreaterOrEqual(const Key& key,
       // Keep searching in this list
       x = next;
     } else {
-      if (prev != nullptr) prev[level] = x;
+      if (prev != nullptr)
+        prev[level] = x;
       if (level == 0) {
         return next;
       } else {
@@ -373,4 +375,3 @@ bool SkipList<Key, Comparator>::Contains(const Key& key) const {
     return false;
   }
 }
-

@@ -24,8 +24,17 @@ set(CLI_SRC
     ./include/leveldb/arena.cpp
 )
 
+set(BENCH_SRC 
+    ./src/benchmark.cpp
+    ./src/db.cpp
+    ./include/leveldb/arena.cpp
+)
+
 add_executable(MyKvTEST ${TEST_SRC})
 target_link_libraries(MyKvTEST pthread)
 
 add_executable(MyKvCLI ${CLI_SRC})
 target_link_libraries(MyKvCLI pthread)
+
+add_executable(benchmark ${BENCH_SRC})
+target_link_libraries(benchmark pthread)

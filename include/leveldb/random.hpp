@@ -61,17 +61,19 @@ class LCG {
   unsigned long int a_;
   unsigned long int c_;
   unsigned long int x_;
+  unsigned long int mod_;
 
  public:
   LCG(unsigned long int m,
       unsigned long int a,
       unsigned long int c,
-      unsigned long int seed)
-      : m_(m), a_(a), c_(c), x_(seed){};
+      unsigned long int seed,
+      unsigned long int mod)
+      : m_(m), a_(a), c_(c), x_(seed), mod_(mod){};
 
   unsigned long int Next() {
     unsigned long int x = (a_ * x_ + c_) % m_;
     x_ = x;
-    return x;
+    return x % mod_;
   }
 };

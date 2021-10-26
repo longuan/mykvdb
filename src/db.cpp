@@ -38,21 +38,36 @@ KVItem* DB::FindGreaterOrEqual(int64_t key) {
 
 bool DB::insert(int64_t key, uint32_t value) {
   std::unique_lock<std::shared_mutex> lck(rw_mutex_);
-  if (FindEqual(key) != nullptr) {
-    // already have this key
-    return false;
-  } else {
-    KVItem* item = (KVItem*)arena_.Allocate(sizeof(KVItem));
-    item->key = key;
-    item->value = value;
-    item->del_flag = 0;
-    if ((item_cnt_ + 1) * kItemDataLen > kMaxItemCount) {
-      return false;
+  internalDB::Iterator iter(&datas_);
+  KVItem tmpKVItem = KVItem(key);
+  tmpKVItem.key = key;
+  iter.Seek(&tmpKVItem);
+
+  if (iter.Valid()) {
+    KVItem* entry = const_cast<KVItem*>(iter.key());
+    if (entry->key == key) {
+      if (entry->del_flag == 1) {
+        // entry is in the deletion status
+        return false;
+      } else {
+        entry->del_flag = 0;
+        entry->value = value;
+        return true;
+      }
     }
-    datas_.Insert(item);
-    item_cnt_++;
-    return true;
   }
+
+  // insert key-value
+  KVItem* item = (KVItem*)arena_.Allocate(sizeof(KVItem));
+  item->key = key;
+  item->value = value;
+  item->del_flag = 0;
+  if ((item_cnt_ + 1) * kItemDataLen > kMaxItemCount) {
+    return false;
+  }
+  datas_.Insert(item);
+  item_cnt_++;
+  return true;
 }
 
 uint32_t DB::get(int64_t key) {
@@ -85,7 +100,7 @@ bool DB::del(int64_t key) {
     // key is not exist or mark as delete
     return false;
   } else {
-    target->del_flag = true;
+    target->del_flag = 1;
     item_cnt_--;
     return true;
   }
